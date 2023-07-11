@@ -39,9 +39,9 @@ let isControlsEnabled
 
 let callback
 
-const maximumWidth = Infinity
-const maximumHeight = Infinity
-const minOutputImageHeight = 100
+const maximumWidth = 3000
+const maximumHeight = 3000
+const minOutputImageHeight = 150
 const maxOutputImageHeight = Infinity
 let mouseRadius 
 let touchRadius
