@@ -109,10 +109,8 @@ span.start_ripple{
     background-color: white;
     color:rgb(57, 77, 255);
     display: grid;
-    flex-direction: column;
     width:450px;
-    min-height:120px;
-    
+    max-width: 90%;
     border-radius:3px;
     animation:alertbox 0.5s;
     font-size:12px;
@@ -122,7 +120,25 @@ span.start_ripple{
     opacity: 1;
     transition: all 0.3s;
 }
-
+@media screen and (max-width:600px){
+    .alert_section{
+        place-items: center center;
+    }
+    @keyframes scaleFromPoint8 {
+        from{
+            transform: scale(0.8);
+        }
+    }
+    .alert_section > div{
+        animation: none;
+        /* animation: scaleFromPoint8 0.3s forwards; */
+        transform:scale(1);
+    }
+    .alert_section.will-be-removed > div{
+        transform:scale(0.8);
+        transition: all 0.3s;
+    }
+}
 @keyframes alertbox{
     from{
         transform:translateY(-10px)rotateX(0.9deg);

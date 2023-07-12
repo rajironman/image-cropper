@@ -39,9 +39,9 @@ let isControlsEnabled
 
 let callback
 
-const maximumWidth = 3000
-const maximumHeight = 3000
-const minOutputImageHeight = 150
+const maximumWidth = 2400
+const maximumHeight = 2400
+const minOutputImageHeight = 100
 const maxOutputImageHeight = Infinity
 let mouseRadius 
 let touchRadius
@@ -83,12 +83,12 @@ function createCropper(callbackFunction,inputImage = null){
     "<div id='input-div'><label titlemsg='select the image you want to crop...' for='img-input' class='click-effect non-selectable left-icon-button click-effect '><img class='icon' src='requirements/img/plus.png'> <span class='text dont-hide'>select image</span><input id='img-input' type='file' accept='image/*'  ></label>"+
     "<label  class='non-selectable dragAndDrop' id='drop-img-file-button'><img style='width:30px;height:30px;margin-right:15px;' src='requirements/img/dragAndDrop.svg'> drag and drop the image</label></div>"+
     "<div id='controls-div'>"+
-    "<label  class='left-img-button click-effect non-selectable'  titlemsg='rotate 90 degree' onclick='rotate90()' ><img  id='rotateBtnImg'  src='requirements/img/rotate.svg' ></label>"+
-    "<label  class='click-effect non-selectable' titlemsg='horizontal flip' onclick='flipHorizontally()'><img class='click-effect' src='requirements/img/hflip.svg'></label>"+
-    "<label  class='click-effect non-selectable' titlemsg='vertical flip' onclick='flipVertically()'><img src='requirements/img/vflip.svg'></label>"+
-    "<label id='set-img-ratio-button' titlemsg='set image size...' class='click-effect non-selectable left-icon-button click-effect ' onclick='document.querySelector(\"#set-img-ratio-overlay\").classList.add(\"show\")'><img src='requirements/img/crop.png' class='icon' />  <span class='text dont-hide'>Set ratio</span></label>"+
+    "<label  class='left-img-button click-effect non-selectable'  titlemsg='rotate 90 degree' onclick='rotate90()' ><img  id='rotateBtnImg'  src='requirements/img/rotate.png' ></label>"+
+    "<label  class='click-effect non-selectable' titlemsg='horizontal flip' onclick='flipHorizontally()'><img class='click-effect' src='requirements/img/hflip.png'></label>"+
+    "<label  class='click-effect non-selectable' titlemsg='vertical flip' onclick='flipVertically()'><img src='requirements/img/vflip.png'></label>"+
+    "<label  class='click-effect non-selectable' titlemsg='settings' onclick='document.querySelector(\"#set-img-ratio-overlay\").classList.add(\"show\")'><img src='requirements/img/settings.png'></label>"+
     "</div>"+
-    "<div id='img-submit-div'><label class='left-icon-button' onclick='finish()'><span class='text dont-hide'>close</span></label><label id='img-submit-button' onclick='getImage()'  class='left-img-button click-effect non-selectable left-icon-button click-effect '><img class='icon' src='requirements/img/check.png'><span class='text' > submit </span></label></div>"+
+    "<div id='img-submit-div'><label class='left-icon-button non-selectable click-effect' titleMsg='close' id='cropper-close-button' onclick='finish()'><img class='icon' src='requirements/img/close.png'></label><label titleMsg='submit' id='img-submit-button' onclick='getImage()'  class='left-img-button click-effect non-selectable left-icon-button click-effect '><img class='icon' src='requirements/img/check.png'><span class='text' > submit </span></label></div>"+
     "</div>"+
     "<div id ='cropper-body'><canvas id='cropper-canvas' style='display:none'></canvas></div>"+
     "<div id='set-img-ratio-overlay' onclick=\"if(event.target === this || ( event.target.tagName.toLowerCase() == 'button'))this.classList.remove('show')\">"+
@@ -109,7 +109,7 @@ function createCropper(callbackFunction,inputImage = null){
     "<h3>custom ratio</h3>"+
     "<div id='custom-img-ratio-div'>"+
     "<label>width &nbsp;: <input type='number' id='set-image-width-input' placeholder='width'></label>x"+
-    "<label>height :<input type='number' id='set-image-height-input' placeholder='height'></label>"+
+    "<label>height : <input type='number' id='set-image-height-input' placeholder='height'></label>"+
     "<button onclick='setImageRatio(document.querySelector(\"#set-image-width-input\").value/document.querySelector(\"#set-image-height-input\").value)' style='background-color:grey;color:white' class='click-effect'>ok</button>"+
     "</div></div></div>"
     
@@ -246,6 +246,7 @@ function notDraggingOver(e){
 // handling the files
 function handleInputImg(inputImg){
     var inputImgObject = new Image()
+    inputImgObject.crossOrigin = 'anonymous'
 
     if(inputImg && inputImg instanceof File){
         var imageType = inputImg.type
@@ -283,26 +284,27 @@ function handleInputImg(inputImg){
         )
     }
     inputImgObject.onerror = function(){
-        alert('புகைப்படத்தை பதிவு ஏற்றுவதில் பிழை ஏற்பட்டது ! மீண்டும் முயற்சி செய்க... ')
+        alert("புகைப்படத்தை பதிவு ஏற்றுவதில் பிழை ஏற்பட்டது ! மீண்டும் முயற்சி செய்க ... \n\nNote :\n\nOnly Images from Sources which allows cross origin request can be loaded...")
         rotateBtnImg.classList.remove('rotateInfinite')
     }
 
 
     // loading the image into the inputImg object using either URL.createObjectURL() method or FileReader's readAsDataURL() method
-    if(inputImg && inputImg instanceof File)
-    if(URL.createObjectURL)
-    inputImgObject.src = URL.createObjectURL(inputImg)
-    else{    
-        var fr = new FileReader()
-        fr.onload = function(){    
-            inputImgObject.src = fr.result
+    if(inputImg && inputImg instanceof File){
+        if(URL.createObjectURL)
+        inputImgObject.src = URL.createObjectURL(inputImg)
+        else{
+            var fr = new FileReader()
+            fr.onload = function(){    
+                inputImgObject.src = fr.result
+            }
+            fr.onerror = function(){
+                alert("புகைப்படத்தை பதிவு ஏற்றுவதில் பிழை ஏற்பட்டது ! மீண்டும் முயற்சி செய்க ... \n\nNote :\n\nOnly Images from Sources which allows cross origin request can be loaded...")
+                rotateBtnImg.classList.remove('rotateInfinite')
+            }
+    
+            fr.readAsDataURL(inputImg)
         }
-        fr.onerror = function(){
-            alert("புகைப்படத்தை பதிவு ஏற்றுவதில் பிழை ஏற்பட்டது ! மீண்டும் முயற்சி செய்க ... ")
-            rotateBtnImg.classList.remove('rotateInfinite')
-        }    
-
-        fr.readAsDataURL(inputImg)
     }
 
     if(inputImg &&  typeof inputImg == 'string' )

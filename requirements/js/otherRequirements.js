@@ -17,12 +17,12 @@ window.alert = (s,hs="அறிவிப்பு :")=>{
     section.append(div)
     document.body.append(section)
     cb.onclick = function(e){
-        if(!section)return
-        section.classList.add('will-be-removed')
+        if(!section.classList.contains('will-be-removed'))
         setTimeout(()=>{
-            if(!section)return
+            if(section)
             section.parentElement.removeChild(section)
         },500)
+        section.classList.add('will-be-removed')
     }
     cb.focus()
 }
