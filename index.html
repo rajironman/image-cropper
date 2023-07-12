@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>js-image-cropper</title>
+  <title>Image-Cropper</title>
   <base href="/image-cropper/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="requirements/css/cropperCanvas.css" rel="stylesheet">
@@ -23,11 +23,10 @@
     }
     #img-section{
       height:100%;
-      display: flex;
+      display: grid;
       gap:10px;
-      flex-direction: column;
       place-content: center center;
-      place-items: center center;
+      place-items: stretch center;
     }
     #img-container{
       max-width: 90vw;
@@ -40,70 +39,75 @@
       vertical-align: middle;
       border-radius: 3px;
       border: 2px solid royalblue;
+      background-color: rgb(231, 231, 231);
     }
-    #buttons-container{
-      display: flex;
-      justify-content: space-between;
-      justify-content: flex-start;
-      justify-content: stretch;
-      justify-items: stretch;
-      margin-top: 10px;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    #buttons-container > *{
-      flex-shrink: 0;
-      flex-wrap: wrap;
-    }
+
     #crop-this-img{
-	    position:absolute;
-	    bottom: 10px;
-	    left:10px;
-	    border-color:white;
-    }
-    #download-button{
-      display: none;
       position: absolute;
       bottom:10px;
       right:10px;
       border-color:white ;
+      display: none;
     }
+    #buttons-container{
+      max-width:90%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    #download-button{
+      display: none;      
+    }
+    #crop-this-img.show,
     #download-button.show{
-      display: inline-block;
+      display: inline-flex;
     }
     #image-url-input-container{
       display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
+    }
+    /* @media screen and (max-width:400px) {
+      #img-url-input-label{
+        width: 85%;
+      }
+    } */
+    #img-url-input-label{
+      background-color: transparent;
+    }
+    #img-url-input-label .left-arrow{
+      height: 100%;
+      background-color: transparent;
+      transition:  all 0.3s;
+      padding: 10px;
+    }
+    #img-url-input-label .left-arrow:hover{
+      background-color: rgb(216, 216, 216);
+    }
+    #img-url-input-label .left-arrow{
+      transform: rotate(180deg);
     }
     #image-url-input{
-      padding: 10px 20px;
-      /* height:50px; */
-      max-height: 100%;
+      padding: 10px 15px;
+      width: 100%;
     }
+
   </style>
 </head>
 <body>
   <section id="img-section">
     <div id="img-container">
       <img id="img-element" src="requirements/img/sample.png" />
-      <button  class="left-icon-button" id="crop-this-img" onclick="cropperCanvas(showImg,'requirements/img/sample.png')">
+      <button  class="left-icon-button show" id="crop-this-img" onclick="createCropper(showImg,'requirements/img/sample.png')">
         <img class='icon' src="requirements/img/crop.png" />
-        <span class="text" > Crop this image</span>
       </button>
-      <a class="left-icon-button" id="download-button" href="" download="cropped-img"> <img class="icon" src="requirements/img/download.png" alt="">
-      </a>
     </div>
     <div id="buttons-container">
+      <label class="left-icon-button" id="download-button" href="" download="cropped-img"> <img class="icon" src="requirements/img/download.png" alt=""><span class="text dont-hide"''>Download</span></span></label>
       <label class="left-icon-button" id="try-again-button" ><img class="icon" src="requirements/img/image.png" >
         <span class="text dont-hide"> Crop another picture</span>
         <input style="display:none" oninput="if(this.files && this.files[0])createCropper(showImg,this.files[0])" accept='images/*' type="file">
       </label>
-    </div>
-    <div id="image-url-input-container">
-      <label class="left-icon-button"><img class='icon' src="requirements/img/url.png" /><input type="text" id="image-url-input"></label>
-      <button class="left-icon-button" onclick="createCropper(showImg,document.querySelector('#image-url-input').value)"><span class="text dont-hide">crop the image from url</span></button>
+      <label id="img-url-input-label" class="left-icon-button"><img class='icon' src="requirements/img/url.png" /><input type="text" onkeyup="checkForEnterKey(event)" placeholder="URL of the image" id="image-url-input" /><img  onclick="cropImgFromURL()" class="left-arrow" src="requirements/img/leftArrow.svg" /></label>
+        <!-- <label class="left-icon-button" onclick="createCropper(showImg,document.querySelector('#image-url-input').value)"><img class='icon' src="requirements/img/url.png" /></label> -->
     </div>
   </section>
 	<script type="text/javascript">
@@ -111,14 +115,31 @@
     function showImg(imgFile){
       let imgElement = document.querySelector('#img-element')
       let downloadButton = document.querySelector('#download-button')
+      let cropThisImg = document.querySelector('#crop-this-img')
       imgURL = URL.createObjectURL(imgFile)
       imgElement.src = imgURL
       downloadButton.href = imgElement.src
       downloadButton.classList.add('show')
+      cropThisImg.classList.remove('show')
 
       imgURL.onload = () => {
          URL.revokeObjectURL(imgURL)
       }
+    }
+    function cropImgFromURL(){
+      url = document.querySelector('#image-url-input').value
+      if(url)
+      createCropper(showImg,url)
+      else
+      alert('Enter image URL first...')
+    }
+    function checkForEnterKey(event){
+      if(event.keyCode !== 13)return
+      url = document.querySelector('#image-url-input').value
+      if(url)
+      createCropper(showImg,url)
+      else
+      alert('Enter image URL first...')
     }
 	</script>
 </body>
