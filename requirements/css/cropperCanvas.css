@@ -44,7 +44,7 @@
 #cropper-header{
     display: grid;
     grid-template-areas: 'input controls submit';
-    background-color: orange;
+    background-color: springgreen;
     padding:10px;
     justify-items: space-between;
     justify-content:space-between;
