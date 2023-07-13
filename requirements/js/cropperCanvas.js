@@ -622,7 +622,7 @@ function drawCropper(){
     // mouseRadius or touchRadius Used to define the coverage area around the resizer discs so as to give better user experience
     // Note : without this user need to point their cursor or finger exactly at the resizer disc drawn at the vertices of the cropper rectangle
     mouseRadius = baseUnit*20
-    touchRadius = baseUnit*20
+    touchRadius = baseUnit*35
 
     // setting styles of the cropper
     cropperCanvasContext.lineWidth = baseUnit+1
