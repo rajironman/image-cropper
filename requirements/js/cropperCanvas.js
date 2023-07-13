@@ -1,11 +1,13 @@
-
-
-
-
-///// start of the block of codes for cropper //////
+////   Just import all the requirements
+////   call the createCropper() function with a callback function as first argument 
+////   and optionally you can pass a image file or image url wih you want to crop as second argument 
+////   after cropping and submitting the cropped image , the cropped image will be then passed to the callback funtion
+////   ===========================================
+////   createCropper(callbackFunction,[imageFile])
+////   ===========================================
+///// start of the block of codes for cropper ////
 //////////////////////////////////////////////////
-
-{
+let cropper = ()=>{
 
 // variable declaration
 
@@ -55,8 +57,8 @@ let coords = {
     "h":200
 }
 
-
-function createCropper(callbackFunction,inputImage = null){
+let cropperObj = {}
+cropperObj.createCropper = function (callbackFunction,inputImage = null){
 
     inputImageCanvas = null
     outputImgFile = null
@@ -165,13 +167,14 @@ function createCropper(callbackFunction,inputImage = null){
 // Every time the orientations changes , the image is redrawn in the imageCanvas using firstDraw function
 
 // adding 90degree to the angle variable
-function rotate90(){
-    angle+=90
+cropperObj.rotate90 = function(){
+    angle += 90
+    angle %= 360
     firstDraw()
 }
 
 // if image is already rotated 90 or 270 degree then it is flipped vertically , else horizontally
-function flipHorizontally(){
+cropperObj.flipHorizontally = function(){
     if(angle == 90 || angle == 270)
     verticalFlip = !verticalFlip // *** you know that flipping a image vertically twice result in the same image , that technique is used here 
     else horizontalFlip = !horizontalFlip // *** you know that flipping a image horizontally twice result in the same image , that technique is used here 
@@ -179,7 +182,7 @@ function flipHorizontally(){
 }
 
 // if image is already rotated 90 or 270 degree then it is flipped horizontally , else vertically
-function flipVertically(){
+cropperObj.flipVertically = function(){
     if(angle == 90 || angle == 270)
     horizontalFlip = !horizontalFlip // *** you know that flipping a image horizontally twice result in the same image , that technique is used here 
     else verticalFlip = !verticalFlip // *** you know that flipping a image vertically twice result in the same image , that technique is used here 
@@ -187,7 +190,7 @@ function flipVertically(){
 }
 
 // resetting things after cropped image is made as output
-function finish(){
+cropperObj.finish = function (){
     try{
         if(cropperSection){
             cropperSection.parentElement.removeChild(cropperSection)
@@ -196,7 +199,7 @@ function finish(){
         cropperCanvasContext = null
         imageCanvas = null
         imageCanvasContext = null
-        document.removeEventListener("keydown",ev2)
+        document.removeEventListener("keydown",keyDownEventHanlder)
         window.onresize = function(){}
         window.onmouseup = function(){}
         window.ontouchend = function(){}
@@ -207,7 +210,7 @@ function finish(){
 }
 
 // getting the final cropped image
-function getImage(){
+cropperObj.getImage = function(){
     let outputCanvas = document.createElement('canvas')
     let outputCanvasContext = outputCanvas.getContext('2d')
 
@@ -216,7 +219,11 @@ function getImage(){
         outputCanvas.height = Math.min(coords.h,maxOutputImageHeight)
         outputCanvas.width = outputCanvas.height * (coords.w/coords.h)
         // the portion of the image defined by cropper is now taken and drawn into outputCanvas to get that portion as a new image
-        outputCanvasContext.drawImage(imageCanvas,coords.x,coords.y,coords.w,coords.h,0,0,outputCanvas.width,outputCanvas.height)
+        let x = coords.x * (imageCanvas.width/canvasWidth)
+        let y = coords.y * (imageCanvas.height/canvasHeight)
+        let w = coords.w * (imageCanvas.width/canvasWidth)
+        let h = coords.h * (imageCanvas.height/canvasHeight)
+        outputCanvasContext.drawImage(imageCanvas,x,y,w,h,0,0,outputCanvas.width,outputCanvas.height)
 
         outputCanvas.toBlob(function(blob){
             var outputImgFile = new File([blob],'image.png',{type:'image/png'})
@@ -227,7 +234,7 @@ function getImage(){
             finish()
         },'image/png')
     }
-    else alert("முதலில் புகைப்படத்தை தேர்வு செய் ... ")
+    else alert("முதலில் புகைப்படத்தை தேர்வு செய் ... \n\n First select the picture...")
 }
 
 // handling the event of dragging a file over the button 'drop-img-file-button'
@@ -244,7 +251,7 @@ function notDraggingOver(e){
 }
 
 // handling the files
-function handleInputImg(inputImg){
+cropperObj.handleInputImg = function(inputImg){
     var inputImgObject = new Image()
     inputImgObject.crossOrigin = 'anonymous'
 
@@ -253,7 +260,7 @@ function handleInputImg(inputImg){
 
         // accepting only certain type of images 
         if(!(imageType == 'image/jpeg' || imageType == 'image/png' || imageType == 'image/jpg')){
-            alert("'png' , 'jpg' மற்றும் 'jpeg' வகை புகைப்படங்கள் மட்டுமே ஏற்றுக்கொள்ளப்படும்...")
+            alert("'png' , 'jpg' மற்றும் 'jpeg' வகை புகைப்படங்கள் மட்டுமே ஏற்றுக்கொள்ளப்படும்...\n\nOnly 'png' , 'jpg' and 'jpeg' type pictures are accepted")
             return
         }
     }
@@ -269,7 +276,7 @@ function handleInputImg(inputImg){
         URL.revokeObjectURL(this.src)
         if(this.height < minOutputImageHeight)
         {
-            alert(" புகைப்படம் குறைந்தபட்சம் "+minOutputImageHeight*1.6+"x"+minOutputImageHeight+" அளவில் இருக்க வேண்டும் ")
+            alert(" புகைப்படம் குறைந்தபட்சம் "+minOutputImageHeight+" உயரம் இருக்க வேண்டும் \n\nImage should be atleast "+minOutputImageHeight+" in height ")
             rotateBtnImg.classList.remove('rotateInfinite')
         }
         else
@@ -307,6 +314,7 @@ function handleInputImg(inputImg){
         }
     }
 
+    // passing the url if the url is given as argument
     if(inputImg &&  typeof inputImg == 'string' )
     inputImgObject.src = inputImg
 }
@@ -321,6 +329,7 @@ function canvasonmousedown(e){
     oldMouseX = startX
     oldMouseY = startY
 
+    // checking whether the user is dragging any of the resizer disc of cropper and if true , then determining which resizer is being dragged
     cropperCanvasContext.beginPath()
     cropperCanvasContext.arc(coords.x+coords.w,coords.y+coords.h,mouseRadius,0,2*Math.PI)
     isBottomRightResizerActiveFirst = cropperCanvasContext.isPointInPath(startX,startY)
@@ -337,36 +346,32 @@ function canvasonmousedown(e){
     cropperCanvasContext.arc(coords.x,coords.y+coords.h,mouseRadius,0,2*Math.PI)
     isBottomLeftResizerActiveFirst = cropperCanvasContext.isPointInPath(startX,startY)
 
+    // if the user is dragging any of the resizer disc , it is made as free end and it will move along with the cursor/pointer , the resizer disc diagonally opposite to it is set fixed 
+    isResizing = false
     if(isBottomRightResizerActiveFirst){
-        isCursorInsideCropperFirst=false
-        isResizing = true
         startX = coords.x
         startY = coords.y
         return
     }
     else if(isTopLeftResizerActiveFirst){
-        isCursorInsideCropperFirst=false
-        isResizing = true
         startX = coords.x+coords.w
         startY = coords.y+coords.h
         return
     }
     else if(isTopRightResizerActiveFirst){
-        isCursorInsideCropperFirst=false
-        isResizing = true
         startX = coords.x
         startY = coords.y+coords.h
         return
     }
     else if(isBottomLeftResizerActiveFirst){
-        isCursorInsideCropperFirst=false
-        isResizing = true
         startX = coords.x+coords.w
         startY = coords.y
         return
     }
     else isResizing = false
 
+
+    // checking whether the user is dragging the cropper
     cropperCanvasContext.beginPath()
     cropperCanvasContext.rect(coords.x,coords.y,coords.w,coords.h)
     isCursorInsideCropperFirst = cropperCanvasContext.isPointInPath(startX,startY)
@@ -380,6 +385,8 @@ function canvasontouchstart(e){
     oldTouchX = startX
     oldTouchY = startY
 
+
+    // checking whether the user is dragging any of the resizer disc of cropper and if true , then determining which resizer is being dragged
     cropperCanvasContext.beginPath()
     cropperCanvasContext.rect(coords.x+10,coords.y+10,coords.w+20,coords.h+20)
     isFirstTouchedInsideCropper = cropperCanvasContext.isPointInPath(startX,startY)
@@ -400,6 +407,7 @@ function canvasontouchstart(e){
     cropperCanvasContext.arc(coords.x,coords.y+coords.h,touchRadius,0,2*Math.PI)
     isBottomLeftResizerActiveFirst = cropperCanvasContext.isPointInPath(startX,startY)
 
+    // if the user is dragging any of the resizer disc , it is made as free end and it will move along with the cursor/pointer , the resizer disc diagonally opposite to it is set fixed 
     if(isBottomRightResizerActiveFirst){
         startX = coords.x
         startY = coords.y
@@ -417,7 +425,8 @@ function canvasontouchstart(e){
         startY = coords.y
     }
     else isResizing = false
-    if(isBottomLeftResizerActiveFirst || isBottomRightResizerActiveFirst || isTopLeftResizerActiveFirst || isTopRightResizerActiveFirst){        
+
+    if(isBottomLeftResizerActiveFirst || isBottomRightResizerActiveFirst || isTopLeftResizerActiveFirst || isTopRightResizerActiveFirst){
         isCursorInsideCropperFirst=false
         isResizing = true
     }
@@ -425,21 +434,23 @@ function canvasontouchstart(e){
 function windowonmouseup(e){
     isMouseDown = false
 
+    // Note : The dimesion of canvasWidth & cropperCanvas's width are in different scale   
+    // Note : The dimesion of canvasHeight & cropperCanvas's height are in different scale   
     let x = Math.floor(( e.clientX - cropperCanvas.offsetLeft )*(canvasWidth/cropperCanvas.clientWidth))
     let y = Math.floor(( e.clientY - cropperCanvas.offsetTop )*(canvasHeight/cropperCanvas.clientHeight))
 
+    // determining where the cursor is when he stopped pressing down the mouse to change its look acording to where it is hovering
     cropperCanvasContext.beginPath()
     cropperCanvasContext.rect(coords.x,coords.y,coords.w,coords.h)
     isCursorInsideCropper = cropperCanvasContext.isPointInPath(x,y)
     if(isCursorInsideCropper)cropperCanvas.style.cursor='grab'
     else cropperCanvas.style.cursor='crosshair'
-
 }
 function windowontouchend(){
     isTouchStarted = false
 }
 
-function ev(e){
+function moveEventHandler(e){
     e.preventDefault()
     if( e.type == "mousemove"){
         let x = Math.floor(( e.clientX - cropperCanvas.offsetLeft )*(canvasWidth/cropperCanvas.clientWidth))
@@ -467,7 +478,6 @@ function ev(e){
             updateCropperCoords(startX,startY,x,y)
             drawCropper()
         }
-                
 
         cropperCanvasContext.beginPath()
         cropperCanvasContext.arc(coords.x+coords.w,coords.y+coords.h,mouseRadius,0,2*Math.PI)
@@ -520,7 +530,7 @@ function ev(e){
     }
 
 }
-function ev2(e){
+function keyDownEventHanlder(e){
     let keyCode = e.keyCode || e.which
 
     if(!e.ctrlKey){
@@ -561,11 +571,14 @@ function updateCropperCoords(startX,startY,x,y){
 
     if(tx+tw > canvasWidth)tw = canvasWidth - tx
     if(ty+th > canvasHeight)th = canvasHeight - ty
-    if(tx < 0)tw = tw + tx
-    if(ty < 0)th = th + ty
-
-    if(ty < 0)ty = 0
-    if(tx < 0)tx = 0
+    if(tx < 0){
+        tw = tw + tx
+        tx = 0
+    }
+    if(ty < 0){
+        th = th + ty
+        ty = 0
+    }
 
     coords.x = Math.floor(tx)
     coords.y = Math.floor(ty)
@@ -573,9 +586,7 @@ function updateCropperCoords(startX,startY,x,y){
     coords.h = Math.floor(th)
 
     if(isFreeSelection)
-    {
-        return
-    }
+    return
 
     let tr = (tw/th)
     if( tr > outputImgRatio ){
@@ -595,90 +606,91 @@ function updateCropperCoords(startX,startY,x,y){
     }
 }
 
+// drawing cropper at the position specified by coords object
 function drawCropper(){
 
-
+    // returning without drawing , if starting position is out of the canvas
     if(coords.x > canvasWidth || coords.y > canvasHeight)
     return
 
-    let lw = Math.ceil( Math.max( cropperCanvas.width,cropperCanvas.height ) / 1000 )
+    // calculating baseUnit to specify the styles of the cropper instead of giving hardcoded values
+    // Note : the cropper canvas may vary in dimension , so to make cropper size same for the user view irrespective of the cropper size baseUnit is used
+    let baseUnit = Math.ceil( cropperCanvas.width  / (cropperCanvas.clientWidth ) )
 
-    mouseRadius = lw*20
-    touchRadius = lw*40
+    // mouseRadius or touchRadius Used to define the coverage area around the resizer discs so as to give better user experience
+    // Note : without this user need to point their cursor or finger exactly at the resizer disc drawn at the vertices of the cropper rectangle
+    mouseRadius = baseUnit*20
+    touchRadius = baseUnit*20
 
-    cropperCanvasContext.lineWidth=lw+1
-    cropperCanvasContext.strokeStyle="lime"
-    cropperCanvasContext.fillStyle="rgba(0, 0, 0, 0.7)"
-    cropperCanvasContext.lineJoin="round"
+    // setting styles of the cropper
+    cropperCanvasContext.lineWidth = baseUnit+1
+    cropperCanvasContext.strokeStyle = "lime"
+    cropperCanvasContext.fillStyle = "rgba(0, 0, 0, 0.7)"
+    cropperCanvasContext.lineJoin = "round"
 
+    // clearing the canvas to redraw the cropper at new position
     cropperCanvasContext.beginPath()
     cropperCanvasContext.clearRect(0,0,cropperCanvas.width,cropperCanvas.height)
     cropperCanvasContext.fillRect(0,0,cropperCanvas.width,cropperCanvas.height)
 
+    // drawing semi-transparent overlay of cropper to visualize the cropper better
     cropperCanvasContext.strokeRect(coords.x,coords.y,coords.w,coords.h)
-    if(coords.w>=1 && coords.h>=1){
-        cropperCanvasContext.lineWidth=lw
 
+    if(coords.w>=1 && coords.h>=1){ // condition to check whether the cropper is atleast 1unit in both width and height
+
+        // setting the context's origin to (coords.x,coords.y) starting point of cropper to easily specify the position of the cropper gridlines
         cropperCanvasContext.clearRect(coords.x,coords.y,coords.w,coords.h)
         cropperCanvasContext.save()
         cropperCanvasContext.translate(coords.x,coords.y)
-        cropperCanvasContext.setLineDash([Math.ceil(lw*4),Math.ceil(lw*4)])
+        cropperCanvasContext.setLineDash([Math.ceil(baseUnit*4),Math.ceil(baseUnit*4)])
         cropperCanvasContext.strokeStyle="rgba(255,255,255,1)"
+
+        // drawing the grid lines of cropper
         cropperCanvasContext.beginPath()
         cropperCanvasContext.moveTo(coords.w / 3 , 0)
         cropperCanvasContext.lineTo(coords.w / 3 , coords.h)
         cropperCanvasContext.moveTo(2 * coords.w / 3 , 0)
         cropperCanvasContext.lineTo(2 * coords.w / 3 , coords.h)
-
         cropperCanvasContext.moveTo(0 , coords.h / 3)
         cropperCanvasContext.lineTo(coords.w , coords.h / 3)
         cropperCanvasContext.moveTo(0 , 2 * coords.h / 3)
         cropperCanvasContext.lineTo(coords.w , 2 * coords.h / 3)
         cropperCanvasContext.stroke()
 
-
+        // restoring the context's origin to initial point of canvas
         cropperCanvasContext.restore()
     }
 
 
-    cropperCanvasContext.lineWidth = lw + 2
+    // setting styles for cropper
     cropperCanvasContext.fillStyle = 'rgb(0, 255, 100)'
     cropperCanvasContext.strokeStyle = 'rgba(255,255,255,1)'
-
-    let r = lw*5
+    let radius = baseUnit*4
     if(is_touch_enabled()){
-        r = Math.max(lw*5 , mouseRadius/4)
-        cropperCanvasContext.lineWidth = lw*2
+        cropperCanvasContext.lineWidth = baseUnit*2 + 5
     }
 
-    cropperCanvasContext.beginPath()
-    cropperCanvasContext.arc(coords.x+coords.w,coords.y+coords.h,r,0,2*Math.PI)
-    cropperCanvasContext.fill()
-    cropperCanvasContext.stroke()
-
-    cropperCanvasContext.beginPath()
-    cropperCanvasContext.arc(coords.x,coords.y,r,0,2*Math.PI)
-    cropperCanvasContext.fill()
-    cropperCanvasContext.stroke()
-
-    cropperCanvasContext.beginPath()
-    cropperCanvasContext.arc(coords.x+coords.w,coords.y,r,0,2*Math.PI)
-    cropperCanvasContext.fill()
-    cropperCanvasContext.stroke()
-
-    cropperCanvasContext.beginPath()
-    cropperCanvasContext.arc(coords.x,coords.y+coords.h,r,0,2*Math.PI)
-    cropperCanvasContext.fill()
-    cropperCanvasContext.stroke()
-
+    // function to draw arc at the speified position
+    function drawArAt(x,y){
+        cropperCanvasContext.beginPath()
+        cropperCanvasContext.arc(x,y,radius,0,2*Math.PI)
+        cropperCanvasContext.fill()
+        cropperCanvasContext.stroke()
+    }
+    // drawing the four resizer circlur discs at the vertices of the cropper rectangle
+    drawArAt(coords.x+coords.w,coords.y+coords.h)
+    drawArAt(coords.x,coords.y)
+    drawArAt(coords.x+coords.w,coords.y)
+    drawArAt(coords.x,coords.y+coords.h)
 }
 
+// drawing the image in imageCanvas and load it's output as background image of cropperCanvas
+// Note : drawing the image in canvas itself will highly impact performance as we will then need to redraw it whnever we draw the cropper 
 function firstDraw(){
 
     if(!inputImageCanvas || !isControlsEnabled)return
     
     img = inputImageCanvas
-    angle = angle%360
 
     disableControls()
     rotateBtnImg.classList.add('rotateInfinite')
@@ -686,24 +698,41 @@ function firstDraw(){
     cropperCanvas.style.display="block"
     cropperCanvas.style.backgroundImage="none"
 
-
+    // setting the imageCanvas and cropperCanvas dimensions according to the input image's dimension and angle of rotation
+    // angle of rotation is used to determine whether the dimensions need to be swapped or not 
     imageCanvas.width = img.width
     imageCanvas.height = img.height
-    cropperCanvas.width = imageCanvas.width
-    cropperCanvas.height = imageCanvas.height
-
     if(angle == 90 || angle == 270){
         imageCanvas.width = img.height
         imageCanvas.height = img.width
-        cropperCanvas.width = img.height
-        cropperCanvas.height = img.width
     }
+    cropperCanvas.width = imageCanvas.width
+    cropperCanvas.height = imageCanvas.height
 
+    // saving the context properties to make a savpoint that can be restored
     imageCanvasContext.save()
-    canvasWidth = imageCanvas.width
-    canvasHeight = imageCanvas.height
 
+    let rootNode = document.querySelector('html')
+    let cropperHeader = document.getElementById('cropper-header')
+    let margin = 20
+    let availableHeight =  rootNode.offsetHeight - cropperHeader.offsetHeight - 2*margin
+    let availableWidth =  rootNode.offsetWidth - 2*margin
+    
+    // setting the dimension according to the available height and width if any of them exceeds corresponding dimension
+    if(cropperCanvas.width > availableWidth || cropperCanvas.height > availableHeight){
+        if(cropperCanvas.width / availableWidth >= cropperCanvas.height / availableHeight){
+            cropperCanvas.width = availableWidth
+            cropperCanvas.height = availableWidth * imageCanvas.height/imageCanvas.width
+        }
+        else{
+            cropperCanvas.width = availableHeight * imageCanvas.width/imageCanvas.height
+            cropperCanvas.height = availableHeight 
+        }
+    }
+    canvasWidth = cropperCanvas.width
+    canvasHeight = cropperCanvas.height
 
+    // pre set up for rotating
     imageCanvasContext.rotate(angle*(Math.PI/180))
     if(angle == 90)
     imageCanvasContext.translate(0,-img.height)
@@ -712,10 +741,13 @@ function firstDraw(){
     if(angle == 180)
     imageCanvasContext.translate(-imageCanvas.width,-imageCanvas.height)
 
+    // pre set up for flipping horizontally
     if(horizontalFlip){
         imageCanvasContext.translate(img.width,0)
         imageCanvasContext.scale(-1,1)
     }
+
+    // pre set up for flipping vertically
     if(verticalFlip)
     {
         imageCanvasContext.translate(0,img.height)
@@ -723,8 +755,11 @@ function firstDraw(){
     }
 
     imageCanvasContext.drawImage(img,0,0,img.width,img.height)
+
+    // restoring to the savepoint
     imageCanvasContext.restore()
 
+    // drawing the cropper at the middle of the canvas for the first time 
     if( canvasWidth/canvasHeight > outputImgRatio ){
         coords.h = canvasHeight / 2
         coords.w = coords.h * outputImgRatio
@@ -740,6 +775,7 @@ function firstDraw(){
     positionTheCanvas()
 
 
+    // getting the image from the imageCanvas and setting it as the bakground for the cropperCanvas
     imageCanvas.toBlob(function(blob){
         var fr = new FileReader()
         fr.readAsDataURL(blob)
@@ -752,11 +788,10 @@ function firstDraw(){
         }
     },'image/png')
 
-
-
-    cropperSection.addEventListener("mousemove",ev)
-    cropperSection.addEventListener("touchmove",ev)
-    document.addEventListener("keydown",ev2)
+    // setting eventlisteners to handle the events - mousemove,touchmove,keydown & resize (window resizing)
+    cropperSection.addEventListener("mousemove",moveEventHandler)
+    cropperSection.addEventListener("touchmove",moveEventHandler)
+    document.addEventListener("keydown",keyDownEventHanlder)
     window.onresize = positionTheCanvas
 
 }
@@ -778,7 +813,7 @@ function disableControls(){
 }
 
 // setting the output image ratio passed as argument
-function setImageRatio(ratio){
+cropperObj.setImageRatio = function(ratio){
     if( ratio && ratio > 0 && ratio != Infinity){
         isFreeSelection = false
         outputImgRatio = ratio
@@ -795,29 +830,42 @@ function setImageRatio(ratio){
 function positionTheCanvas(){
     var rootNode = document.querySelector('html')
     var cropperHeader = document.getElementById('cropper-header')
-    var availableHeight =  rootNode.clientHeight - cropperHeader.clientHeight
-    var availableWidth =  rootNode.clientWidth
-    var margin = 40
+    var availableHeight =  rootNode.offsetHeight - cropperHeader.offsetHeight
+    var availableWidth =  rootNode.offsetWidth
+    var margin = 20
     if(canvasWidth/canvasHeight < availableWidth/availableHeight){
-        cropperCanvas.style.height = (availableHeight-margin)+'px'
+        cropperCanvas.style.height = (availableHeight-2*margin)+'px'
         cropperCanvas.style.width = 'auto'
-        cropperCanvas.style.marginLeft = ( (availableWidth - cropperCanvas.clientWidth)/2  )+ 'px'
-        cropperCanvas.style.marginTop = margin/2+'px'
+        cropperCanvas.style.marginLeft = ( (availableWidth - cropperCanvas.offsetWidth)/2  )+ 'px'
+        cropperCanvas.style.marginTop = margin+'px'
     }
     else{
         cropperCanvas.style.height = 'auto'
-        cropperCanvas.style.width = (availableWidth-margin)+'px'
-        cropperCanvas.style.marginLeft = margin/2+'px'
-        cropperCanvas.style.marginTop = ( (availableHeight - cropperCanvas.clientHeight)/2  )+ 'px'
+        cropperCanvas.style.width = (availableWidth-2*margin)+'px'
+        cropperCanvas.style.marginLeft = margin+'px'
+        cropperCanvas.style.marginTop = ( (availableHeight - cropperCanvas.offsetHeight)/2  )+ 'px'
     }
 }
 
+
+
+
+
+return cropperObj
+
+}
 
 function is_touch_enabled(){
     return ( 'ontouchstart' in window) ||
     (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)
 }
 
-
-
-}
+let cropperObj = cropper()
+let createCropper = cropperObj.createCropper
+let flipHorizontally = cropperObj.flipHorizontally
+let flipVertically = cropperObj.flipVertically
+let getImage = cropperObj.getImage
+let finish = cropperObj.finish
+let handleInputImg = cropperObj.handleInputImg
+let rotate90 = cropperObj.rotate90
+let setImageRatio = cropperObj.setImageRatio
