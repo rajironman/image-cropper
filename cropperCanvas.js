@@ -15,6 +15,8 @@ let cropper = ()=>{
 //    * cropperCnavas - to draw cropper 
 //    * imageCanvas - to draw the input image 
 //    * outputCanvas - to render and save the final cropped image
+
+
 let cropperCanvas   
 let cropperCanvasContext             
 let imageCanvas     
@@ -97,21 +99,9 @@ cropperObj.createCropper = function (callbackFunction,inputImage = null){
     "<div id='set-img-ratio-container'><h1>set aspect ratio</h1>"+
     "<button id='free-aspect-ratio-button' onclick='setImageRatio(0)'  class='click-effect'>free aspect ratio</button>"+
     "<h3>select ratio</h3>"+
-    "<div><button onclick='setImageRatio(1)'>1 x 1</button>"+
-    "<button onclick='setImageRatio(3/2)'>3 x 2</button>"+
-    "<button onclick='setImageRatio(5/3)'>5 x 3</button>"+
-    "<button onclick='setImageRatio(4/3)'>4 x 3</button>"+
-    "<button onclick='setImageRatio(5/4)'>5 x 4</button>"+
-    "<button onclick='setImageRatio(7/5)'>7 x 5</button>"+
-    "<button onclick='setImageRatio(10/8)'>10 x 8</button>"+
-    "<button onclick='setImageRatio(16/9)'>16 x 9</button>"+
-    "<button onclick='setImageRatio(9/16)'>9 x 16</button>"+
-    "<button onclick='setImageRatio(3/4)'>3 x 4</button>"+
-    "<button onclick='setImageRatio(4/5)'>4 x 5</button></div>"+
-    "<h3>custom ratio</h3>"+
     "<div id='custom-img-ratio-div'>"+
-    "<label>width &nbsp;: <input type='number' id='set-image-width-input' placeholder='width'></label>x"+
-    "<label>height : <input type='number' id='set-image-height-input' placeholder='height'></label>"+
+    "<span>width &nbsp;: <select type='number' id='set-image-width-input' placeholder='width'><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></span>x"+
+    "<span>height : <select type='number' id='set-image-height-input' placeholder='height'><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></span>"+
     "<button onclick='setImageRatio(document.querySelector(\"#set-image-width-input\").value/document.querySelector(\"#set-image-height-input\").value)' style='background-color:grey;color:white' class='click-effect'>ok</button>"+
     "</div></div></div>"
     
@@ -234,7 +224,7 @@ cropperObj.getImage = function(){
             finish()
         },'image/png')
     }
-    else alert("முதலில் புகைப்படத்தை தேர்வு செய் ... \n\n First select the picture...")
+    else customAlert("முதலில் புகைப்படத்தை தேர்வு செய் ... \n\n First select the picture...")
 }
 
 // handling the event of dragging a file over the button 'drop-img-file-button'
@@ -260,7 +250,7 @@ cropperObj.handleInputImg = function(inputImg){
 
         // accepting only certain type of images 
         if(!(imageType == 'image/jpeg' || imageType == 'image/png' || imageType == 'image/jpg')){
-            alert("'png' , 'jpg' மற்றும் 'jpeg' வகை புகைப்படங்கள் மட்டுமே ஏற்றுக்கொள்ளப்படும்...\n\nOnly 'png' , 'jpg' and 'jpeg' type pictures are accepted")
+            customAlert("'png' , 'jpg' மற்றும் 'jpeg' வகை புகைப்படங்கள் மட்டுமே ஏற்றுக்கொள்ளப்படும்...\n\nOnly 'png' , 'jpg' and 'jpeg' type pictures are accepted")
             return
         }
     }
@@ -276,7 +266,7 @@ cropperObj.handleInputImg = function(inputImg){
         URL.revokeObjectURL(this.src)
         if(this.height < minOutputImageHeight)
         {
-            alert(" புகைப்படம் குறைந்தபட்சம் "+minOutputImageHeight+" உயரம் இருக்க வேண்டும் \n\nImage should be atleast "+minOutputImageHeight+" in height ")
+            customAlert(" புகைப்படம் குறைந்தபட்சம் "+minOutputImageHeight+" உயரம் இருக்க வேண்டும் \n\nImage should be atleast "+minOutputImageHeight+" in height ")
             rotateBtnImg.classList.remove('rotateInfinite')
         }
         else
@@ -291,7 +281,7 @@ cropperObj.handleInputImg = function(inputImg){
         )
     }
     inputImgObject.onerror = function(){
-        alert("புகைப்படத்தை பதிவு ஏற்றுவதில் பிழை ஏற்பட்டது ! மீண்டும் முயற்சி செய்க ... \n\nNote :\n\nOnly Images from Sources which allows cross origin request can be loaded...")
+        customAlert("புகைப்படத்தை பதிவு ஏற்றுவதில் பிழை ஏற்பட்டது ! மீண்டும் முயற்சி செய்க ... \n\nNote :\n\nOnly Images from Sources which allows cross origin request can be loaded...")
         rotateBtnImg.classList.remove('rotateInfinite')
     }
 
@@ -306,7 +296,7 @@ cropperObj.handleInputImg = function(inputImg){
                 inputImgObject.src = fr.result
             }
             fr.onerror = function(){
-                alert("புகைப்படத்தை பதிவு ஏற்றுவதில் பிழை ஏற்பட்டது ! மீண்டும் முயற்சி செய்க ... \n\nNote :\n\nOnly Images from Sources which allows cross origin request can be loaded...")
+                customAlert("புகைப்படத்தை பதிவு ஏற்றுவதில் பிழை ஏற்பட்டது ! மீண்டும் முயற்சி செய்க ... \n\nNote :\n\nOnly Images from Sources which allows cross origin request can be loaded...")
                 rotateBtnImg.classList.remove('rotateInfinite')
             }
     
@@ -620,7 +610,7 @@ function drawCropper(){
     // mouseRadius or touchRadius Used to define the coverage area around the resizer discs so as to give better user experience
     // Note : without this user need to point their cursor or finger exactly at the resizer disc drawn at the vertices of the cropper rectangle
     mouseRadius = baseUnit*20
-    touchRadius = baseUnit*20
+    touchRadius = baseUnit*35
 
     // setting styles of the cropper
     cropperCanvasContext.lineWidth = baseUnit+1
@@ -665,9 +655,9 @@ function drawCropper(){
     // setting styles for cropper
     cropperCanvasContext.fillStyle = 'rgb(0, 255, 100)'
     cropperCanvasContext.strokeStyle = 'rgba(255,255,255,1)'
-    let radius = baseUnit*4
+    let radius = baseUnit*4 + 2
     if(is_touch_enabled()){
-        cropperCanvasContext.lineWidth = baseUnit*2 + 5
+        cropperCanvasContext.lineWidth = baseUnit*2 
     }
 
     // function to draw arc at the speified position
@@ -709,14 +699,14 @@ function firstDraw(){
     cropperCanvas.width = imageCanvas.width
     cropperCanvas.height = imageCanvas.height
 
-    // saving the context properties to make a savpoint that can be restored
+    // saving the context properties to make a savepoint that can be restored
     imageCanvasContext.save()
 
     let rootNode = document.querySelector('html')
     let cropperHeader = document.getElementById('cropper-header')
     let margin = 20
-    let availableHeight =  rootNode.offsetHeight - cropperHeader.offsetHeight - 2*margin
-    let availableWidth =  rootNode.offsetWidth - 2*margin
+    let availableHeight = ( rootNode.offsetHeight - cropperHeader.offsetHeight - 2*margin ) * 2
+    let availableWidth =  ( rootNode.offsetWidth - 2*margin ) * 2
     
     // setting the dimension according to the available height and width if any of them exceeds corresponding dimension
     if(cropperCanvas.width > availableWidth || cropperCanvas.height > availableHeight){
