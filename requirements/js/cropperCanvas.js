@@ -15,6 +15,8 @@ let cropper = ()=>{
 //    * cropperCnavas - to draw cropper 
 //    * imageCanvas - to draw the input image 
 //    * outputCanvas - to render and save the final cropped image
+
+
 let cropperCanvas   
 let cropperCanvasContext             
 let imageCanvas     
@@ -715,8 +717,8 @@ function firstDraw(){
     let rootNode = document.querySelector('html')
     let cropperHeader = document.getElementById('cropper-header')
     let margin = 20
-    let availableHeight =  rootNode.offsetHeight - cropperHeader.offsetHeight - 2*margin
-    let availableWidth =  rootNode.offsetWidth - 2*margin
+    let availableHeight = ( rootNode.offsetHeight - cropperHeader.offsetHeight - 2*margin ) * 2
+    let availableWidth =  ( rootNode.offsetWidth - 2*margin ) * 2
     
     // setting the dimension according to the available height and width if any of them exceeds corresponding dimension
     if(cropperCanvas.width > availableWidth || cropperCanvas.height > availableHeight){
