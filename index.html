@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>Image-Cropper</title>
-  <base href="/image-cropper/">
+  <!-- <base href="/image-cropper/"> -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="requirements/css/cropperCanvas.css" rel="stylesheet">
   <link href="requirements/css/otherRequirements.css" rel="stylesheet">
@@ -19,18 +19,18 @@
     html,body{
       margin:0;
       height:100%;
-      background-color: aliceblue;
+      background-color: springgreen;
     }
     #img-section{
       height:100%;
       display: grid;
       gap:10px;
       place-content: center center;
-      place-items: stretch center;
+      place-items: stretch start;
     }
     #img-container{
       max-width: 90vw;
-      max-height: 65vh;
+      max-height: 60vh;
       position: relative;
     }
     #img-element{
@@ -50,7 +50,6 @@
       display: none;
     }
     #buttons-container{
-      max-width:90%;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -62,32 +61,32 @@
     #download-button.show{
       display: inline-flex;
     }
-    #image-url-input-container{
-      display: flex;
-    }
-    /* @media screen and (max-width:400px) {
-      #img-url-input-label{
-        width: 85%;
-      }
-    } */
     #img-url-input-label{
-      background-color: transparent;
+      background-color: white;
     }
     #img-url-input-label .left-arrow{
       height: 100%;
-      background-color: transparent;
+      background-color: rgb(228, 228, 228);
       transition:  all 0.3s;
       padding: 10px;
+      transform: rotate(180deg);
     }
     #img-url-input-label .left-arrow:hover{
       background-color: rgb(216, 216, 216);
     }
-    #img-url-input-label .left-arrow{
-      transform: rotate(180deg);
-    }
     #image-url-input{
-      padding: 10px 15px;
+      padding: 10px 20px;
       width: 100%;
+    }
+    @media screen and (max-width:400px) {
+      #img-section{
+        place-content:center center;
+        place-items: stretch stretch;
+        padding: 20px;
+      }
+      #img-container{
+        width: 100%;
+      }
     }
 
   </style>
@@ -132,7 +131,8 @@
       if(url)
       createCropper(showImg,url)
       else
-      customAlert('முதலில் புகைப்பட இணைப்பை உள்ளிடு\n\nEnter image URL first...')
+      alert('hi')
+      // customAlert('முதலில் புகைப்பட இணைப்பை உள்ளிடு\n\nEnter image URL first...')
     }
     function checkForEnterKey(event){
       if(event.keyCode === 13)cropImgFromURL()
