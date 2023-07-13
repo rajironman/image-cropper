@@ -99,21 +99,9 @@ cropperObj.createCropper = function (callbackFunction,inputImage = null){
     "<div id='set-img-ratio-container'><h1>set aspect ratio</h1>"+
     "<button id='free-aspect-ratio-button' onclick='setImageRatio(0)'  class='click-effect'>free aspect ratio</button>"+
     "<h3>select ratio</h3>"+
-    "<div><button onclick='setImageRatio(1)'>1 x 1</button>"+
-    "<button onclick='setImageRatio(3/2)'>3 x 2</button>"+
-    "<button onclick='setImageRatio(5/3)'>5 x 3</button>"+
-    "<button onclick='setImageRatio(4/3)'>4 x 3</button>"+
-    "<button onclick='setImageRatio(5/4)'>5 x 4</button>"+
-    "<button onclick='setImageRatio(7/5)'>7 x 5</button>"+
-    "<button onclick='setImageRatio(10/8)'>10 x 8</button>"+
-    "<button onclick='setImageRatio(16/9)'>16 x 9</button>"+
-    "<button onclick='setImageRatio(9/16)'>9 x 16</button>"+
-    "<button onclick='setImageRatio(3/4)'>3 x 4</button>"+
-    "<button onclick='setImageRatio(4/5)'>4 x 5</button></div>"+
-    "<h3>custom ratio</h3>"+
     "<div id='custom-img-ratio-div'>"+
-    "<label>width &nbsp;: <input type='number' id='set-image-width-input' placeholder='width'></label>x"+
-    "<label>height : <input type='number' id='set-image-height-input' placeholder='height'></label>"+
+    "<span>width &nbsp;: <select type='number' id='set-image-width-input' placeholder='width'><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></span>x"+
+    "<span>height : <select type='number' id='set-image-height-input' placeholder='height'><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></span>"+
     "<button onclick='setImageRatio(document.querySelector(\"#set-image-width-input\").value/document.querySelector(\"#set-image-height-input\").value)' style='background-color:grey;color:white' class='click-effect'>ok</button>"+
     "</div></div></div>"
     
