@@ -234,7 +234,7 @@ cropperObj.getImage = function(){
             finish()
         },'image/png')
     }
-    else alert("முதலில் புகைப்படத்தை தேர்வு செய் ... \n\n First select the picture...")
+    else customAlert("முதலில் புகைப்படத்தை தேர்வு செய் ... \n\n First select the picture...")
 }
 
 // handling the event of dragging a file over the button 'drop-img-file-button'
@@ -260,7 +260,7 @@ cropperObj.handleInputImg = function(inputImg){
 
         // accepting only certain type of images 
         if(!(imageType == 'image/jpeg' || imageType == 'image/png' || imageType == 'image/jpg')){
-            alert("'png' , 'jpg' மற்றும் 'jpeg' வகை புகைப்படங்கள் மட்டுமே ஏற்றுக்கொள்ளப்படும்...\n\nOnly 'png' , 'jpg' and 'jpeg' type pictures are accepted")
+            customAlert("'png' , 'jpg' மற்றும் 'jpeg' வகை புகைப்படங்கள் மட்டுமே ஏற்றுக்கொள்ளப்படும்...\n\nOnly 'png' , 'jpg' and 'jpeg' type pictures are accepted")
             return
         }
     }
@@ -276,7 +276,7 @@ cropperObj.handleInputImg = function(inputImg){
         URL.revokeObjectURL(this.src)
         if(this.height < minOutputImageHeight)
         {
-            alert(" புகைப்படம் குறைந்தபட்சம் "+minOutputImageHeight+" உயரம் இருக்க வேண்டும் \n\nImage should be atleast "+minOutputImageHeight+" in height ")
+            customAlert(" புகைப்படம் குறைந்தபட்சம் "+minOutputImageHeight+" உயரம் இருக்க வேண்டும் \n\nImage should be atleast "+minOutputImageHeight+" in height ")
             rotateBtnImg.classList.remove('rotateInfinite')
         }
         else
@@ -291,7 +291,7 @@ cropperObj.handleInputImg = function(inputImg){
         )
     }
     inputImgObject.onerror = function(){
-        alert("புகைப்படத்தை பதிவு ஏற்றுவதில் பிழை ஏற்பட்டது ! மீண்டும் முயற்சி செய்க ... \n\nNote :\n\nOnly Images from Sources which allows cross origin request can be loaded...")
+        customAlert("புகைப்படத்தை பதிவு ஏற்றுவதில் பிழை ஏற்பட்டது ! மீண்டும் முயற்சி செய்க ... \n\nNote :\n\nOnly Images from Sources which allows cross origin request can be loaded...")
         rotateBtnImg.classList.remove('rotateInfinite')
     }
 
@@ -306,7 +306,7 @@ cropperObj.handleInputImg = function(inputImg){
                 inputImgObject.src = fr.result
             }
             fr.onerror = function(){
-                alert("புகைப்படத்தை பதிவு ஏற்றுவதில் பிழை ஏற்பட்டது ! மீண்டும் முயற்சி செய்க ... \n\nNote :\n\nOnly Images from Sources which allows cross origin request can be loaded...")
+                customAlert("புகைப்படத்தை பதிவு ஏற்றுவதில் பிழை ஏற்பட்டது ! மீண்டும் முயற்சி செய்க ... \n\nNote :\n\nOnly Images from Sources which allows cross origin request can be loaded...")
                 rotateBtnImg.classList.remove('rotateInfinite')
             }
     
@@ -665,9 +665,9 @@ function drawCropper(){
     // setting styles for cropper
     cropperCanvasContext.fillStyle = 'rgb(0, 255, 100)'
     cropperCanvasContext.strokeStyle = 'rgba(255,255,255,1)'
-    let radius = baseUnit*4
+    let radius = baseUnit*4 + 2
     if(is_touch_enabled()){
-        cropperCanvasContext.lineWidth = baseUnit*2 + 5
+        cropperCanvasContext.lineWidth = baseUnit*2 
     }
 
     // function to draw arc at the speified position
@@ -709,7 +709,7 @@ function firstDraw(){
     cropperCanvas.width = imageCanvas.width
     cropperCanvas.height = imageCanvas.height
 
-    // saving the context properties to make a savpoint that can be restored
+    // saving the context properties to make a savepoint that can be restored
     imageCanvasContext.save()
 
     let rootNode = document.querySelector('html')

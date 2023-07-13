@@ -92,10 +92,10 @@ span.start_ripple{
     place-items: start center;
     background-color: rgba(128, 128, 128, 0.2);
     backdrop-filter: blur(8px);
-    perspective: 100px;
+    perspective: 50px;
     perspective-origin: top center;
     z-index: 20;
-    transition: all 0.5s;
+    transition: all 0.3s;
 }
 .alert_section.will-be-removed > div{
     transform:translateY(-10px)rotateX(0.9deg);
@@ -107,12 +107,11 @@ span.start_ripple{
 .alert_section div{
     padding:20px;
     background-color: white;
-    color:rgb(57, 77, 255);
-    display: grid;
+    color:darkslategray;
     width:450px;
     max-width: 90%;
     border-radius:3px;
-    animation:alertbox 0.5s;
+    animation:alertbox 0.2s;
     font-size:12px;
     position: absolute;
     transform-origin:top center;
@@ -149,7 +148,7 @@ span.start_ripple{
 }
 .alert_section h1{
     padding-bottom:5px;
-    border-bottom:2px dotted rgb(57, 77, 255);
+    border-bottom:2px dotted grey;
     margin: 5px;
 }
 .alert_section p{
@@ -158,16 +157,18 @@ span.start_ripple{
     font-weight: bold;
 }
 .alert_section button{
-    padding: 0px 25px;
+    padding: 5px 30px;
     border-radius:3px;
     transition: all 0.3s;
     color:white;
-    background-color: rgb(57, 77, 255);
+    background-color: darkslategray;
     margin-top:10px;
+    align-self: stretch;
     justify-self: flex-end;
     box-sizing: border-box;
     border:2px solid transparent;
     font-size:16px;
+    float: right;
 }
 .alert_section button:hover{
     background-color: grey;

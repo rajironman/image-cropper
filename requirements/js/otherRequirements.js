@@ -1,4 +1,4 @@
-window.alert = (s,hs="அறிவிப்பு :")=>{
+function customAlert(s,hs="அறிவிப்பு :"){
     var section = document.createElement('section')
     var div = document.createElement('div')
     var p = document.createElement('p')
@@ -16,8 +16,8 @@ window.alert = (s,hs="அறிவிப்பு :")=>{
 
     section.append(div)
     document.body.append(section)
-    cb.onclick = function(e){
-        if(!section.classList.contains('will-be-removed'))
+    cb.onclick = function(){
+        if(section && !section.classList.contains('will-be-removed'))
         setTimeout(()=>{
             if(section)
             section.parentElement.removeChild(section)

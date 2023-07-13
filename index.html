@@ -93,10 +93,10 @@
   </style>
 </head>
 <body>
-  <section id="img-section">
+  <section id="img-section" class="non-selectable">
     <div id="img-container">
-      <img id="img-element" src="requirements/img/sample.png" />
-      <button  class="left-icon-button show" id="crop-this-img" onclick="createCropper(showImg,'requirements/img/sample.png')">
+      <img id="img-element" src="requirements/img/sample.jpg" />
+      <button  class="left-icon-button show" id="crop-this-img" onclick="createCropper(showImg,document.querySelector('#img-element').src)">
         <img class='icon' src="requirements/img/crop.png" />
       </button>
     </div>
@@ -104,14 +104,14 @@
       <a class="left-icon-button" id="download-button" href="" download="cropped-img"> <img class="icon" src="requirements/img/download.png" alt=""><span class="text dont-hide"''>Download</span></span></a>
       <label class="left-icon-button" id="try-again-button" ><img class="icon" src="requirements/img/image.png" >
         <span class="text dont-hide"> Crop another picture</span>
-        <input style="display:none" oninput="if(this.files && this.files[0])createCropper(showImg,this.files[0])" accept='image/*' type="file">
+        <input style="display:none" oninput="if(this.files && this.files[0]){createCropper(showImg,this.files[0]);this.value=null}" accept='image/*' type="file">
       </label>
-      <label id="img-url-input-label" class="left-icon-button"><img class='icon' src="requirements/img/url.png" /><input type="text" onkeyup="checkForEnterKey(event)" placeholder="URL of the image" id="image-url-input" /><img  onclick="cropImgFromURL()" class="left-arrow" src="requirements/img/leftArrow.svg" /></label>
-        <!-- <label class="left-icon-button" onclick="createCropper(showImg,document.querySelector('#image-url-input').value)"><img class='icon' src="requirements/img/url.png" /></label> -->
+      <button id="img-url-input-label" class="left-icon-button"><img class='icon' src="requirements/img/url.png" /><input type="text" onkeyup="checkForEnterKey(event)" placeholder="URL of the image" id="image-url-input" /><img  onclick="cropImgFromURL()" class="left-arrow" src="requirements/img/leftArrow.svg" /></button>
     </div>
   </section>
 	<script type="text/javascript">
 
+    createCropper(showImg,'requirements/img/sample.jpg')
     function showImg(imgFile){
       let imgElement = document.querySelector('#img-element')
       let downloadButton = document.querySelector('#download-button')
@@ -127,19 +127,15 @@
       }
     }
     function cropImgFromURL(){
+      document.activeElement.blur()
       url = document.querySelector('#image-url-input').value
       if(url)
       createCropper(showImg,url)
       else
-      alert('Enter image URL first...')
+      customAlert('முதலில் புகைப்பட இணைப்பை உள்ளிடு\n\nEnter image URL first...')
     }
     function checkForEnterKey(event){
-      if(event.keyCode !== 13)return
-      url = document.querySelector('#image-url-input').value
-      if(url)
-      createCropper(showImg,url)
-      else
-      alert('Enter image URL first...')
+      if(event.keyCode === 13)cropImgFromURL()
     }
 	</script>
 </body>
