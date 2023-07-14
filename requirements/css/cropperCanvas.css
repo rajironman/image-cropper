@@ -49,6 +49,16 @@
     justify-items: space-between;
     justify-content:space-between;
 }
+#cropper-body{
+    display: flex;
+    place-content: center center;
+    place-items: center center;
+    padding:20px;
+}
+#cropper-canvas{
+    max-width: 100%;
+    max-height:100%;
+}
 #input-div{
     grid-area: input;
 }

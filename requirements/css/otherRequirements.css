@@ -77,10 +77,10 @@ span.start_ripple{
         transform:translate( 0px , 0px );
     }
 }
-.alert_section{
+.alert-section{
     position:fixed;
     width:100vw;
-    height:100vh;
+    height:100vh;    
     top:0;
     left:0;
     right:0;
@@ -97,19 +97,21 @@ span.start_ripple{
     z-index: 20;
     transition: all 0.3s;
 }
-.alert_section.will-be-removed > div{
+.alert-section.will-be-removed > div{
     transform:translateY(-10px)rotateX(0.9deg);
 }
-.alert_section.will-be-removed{
+.alert-section.will-be-removed{
     opacity: 0;
 }
 
-.alert_section div{
+.alert-section div{
     padding:20px;
     background-color: white;
     color:darkslategray;
     width:450px;
     max-width: 90%;
+    max-height: 100%;
+    overflow-y: auto;
     border-radius:3px;
     animation:alertbox 0.2s;
     font-size:12px;
@@ -120,7 +122,7 @@ span.start_ripple{
     transition: all 0.3s;
 }
 @media screen and (max-width:600px){
-    .alert_section{
+    .alert-section{
         place-items: center center;
     }
     @keyframes scaleFromPoint8 {
@@ -128,12 +130,12 @@ span.start_ripple{
             transform: scale(0.8);
         }
     }
-    .alert_section > div{
+    .alert-section > div{
         animation: none;
         /* animation: scaleFromPoint8 0.3s forwards; */
         transform:scale(1);
     }
-    .alert_section.will-be-removed > div{
+    .alert-section.will-be-removed > div{
         transform:scale(0.8);
         transition: all 0.3s;
     }
@@ -146,17 +148,17 @@ span.start_ripple{
         transform:translateY(0px)rotateX(0deg);
     }
 }
-.alert_section h1{
+.alert-section h1{
     padding-bottom:5px;
     border-bottom:2px dotted grey;
     margin: 5px;
 }
-.alert_section p{
+.alert-section p{
     margin:20px 10px ;
     font-size:17px;
     font-weight: bold;
 }
-.alert_section button{
+.alert-section button{
     padding: 5px 30px;
     border-radius:3px;
     transition: all 0.3s;
@@ -170,10 +172,10 @@ span.start_ripple{
     font-size:16px;
     float: right;
 }
-.alert_section button:hover{
+.alert-section button:hover{
     background-color: grey;
 }
-.alert_section button:focus{
+.alert-section button:focus{
     border:2px solid white;
     box-shadow:0 0 0 2px rgb(57, 77, 255);
 }
