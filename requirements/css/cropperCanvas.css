@@ -150,7 +150,7 @@ label#drop-img-file-button{
     border-radius: 3px;
 }
 label#drop-img-file-button.draggingOver{
-    background-color: deeppink;
+    background-color: dodgerblue;
     color:white;
 }
 
