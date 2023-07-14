@@ -770,18 +770,25 @@ function firstDraw(){
     // restoring to the savepoint
     imageCanvasContext.restore()
 
-    // drawing the cropper at the middle of the canvas for the first time 
-    if( canvasWidth/canvasHeight > outputImgRatio ){
-        coords.h = canvasHeight / 2
-        coords.w = coords.h * outputImgRatio
-        coords.y = Math.ceil( ( canvasHeight - coords.h ) / 2  )
-        coords.x = Math.ceil( ( canvasWidth - coords.w ) / 2  )
+    if(isFreeSelection){
+        coords.h = canvasHeight - 160
+        coords.w = canvasWidth - 160
+        coords.y = 80
+        coords.x = 80
     }else{
-        coords.w = canvasWidth / 2
-        coords.h = coords.w / outputImgRatio
+        // drawing the cropper at the middle  
+        if( canvasWidth/canvasHeight > outputImgRatio ){
+            coords.h = canvasHeight / 2
+            coords.w = coords.h * outputImgRatio
+            coords.y = Math.ceil( ( canvasHeight - coords.h ) / 2  )
+            coords.x = Math.ceil( ( canvasWidth - coords.w ) / 2  )
+        }else{
+            coords.w = canvasWidth / 2
+            coords.h = coords.w / outputImgRatio
 
-        coords.x = Math.ceil( ( canvasWidth - coords.w ) / 2  )
-        coords.y = Math.ceil( ( canvasHeight - coords.h ) / 2  )
+            coords.x = Math.ceil( ( canvasWidth - coords.w ) / 2  )
+            coords.y = Math.ceil( ( canvasHeight - coords.h ) / 2  )
+        }
     }
     positionTheCanvas()
 
