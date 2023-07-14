@@ -43,8 +43,8 @@ let isControlsEnabled
 
 let callback
 
-const maximumWidth = 2400
-const maximumHeight = 2400
+const maximumWidth = Infinity
+const maximumHeight = Infinity
 const minOutputImageHeight = 100
 const maxOutputImageHeight = Infinity
 let mouseRadius 
@@ -105,7 +105,7 @@ cropperObj.createCropper = function (callbackFunction,inputImage = null){
     "<button onclick='setImageRatio(document.querySelector(\"#set-image-width-input\").value/document.querySelector(\"#set-image-height-input\").value)' style='background-color:grey;color:white' class='click-effect'>ok</button>"+
     "</div></div></div>"
     
-    // To initialize some extra features like ripple effect on click , custom tooltip
+    // To initialize some extra features like showing ripple effect when clicking on an element ,showing custom tooltip when hovering over an element 
     setup()
 
     cropperCanvas = document.getElementById('cropper-canvas')
@@ -206,22 +206,26 @@ cropperObj.getImage = function(){
 
     if(isImageInCanvas){
 
-        outputCanvas.height = Math.min(coords.h,maxOutputImageHeight)
-        outputCanvas.width = outputCanvas.height * (coords.w/coords.h)
         // the portion of the image defined by cropper is now taken and drawn into outputCanvas to get that portion as a new image
         let x = coords.x * (imageCanvas.width/canvasWidth)
         let y = coords.y * (imageCanvas.height/canvasHeight)
         let w = coords.w * (imageCanvas.width/canvasWidth)
         let h = coords.h * (imageCanvas.height/canvasHeight)
+
+        // restrict the image height to maxOutputImageHeight
+        outputCanvas.height = Math.round(Math.min( h , maxOutputImageHeight ))
+        outputCanvas.width = Math.round(Math.min( h , maxOutputImageHeight ) * (coords.w/coords.h))
+
         outputCanvasContext.drawImage(imageCanvas,x,y,w,h,0,0,outputCanvas.width,outputCanvas.height)
 
         outputCanvas.toBlob(function(blob){
             var outputImgFile = new File([blob],'image.png',{type:'image/png'})
 
-            // final image file is passed to the callback function given in the createCropper function
-            callback(outputImgFile)
-
-            finish()
+            if(confirm("\nYou can't resume editing this again...\n\n so make sure...")){
+                // final image file is passed to the callback function given in the createCropper function
+                callback(outputImgFile)
+                finish()
+            }
         },'image/png')
     }
     else customAlert("முதலில் புகைப்படத்தை தேர்வு செய் ... \n\n First select the picture...")
@@ -605,7 +609,7 @@ function drawCropper(){
 
     // calculating baseUnit to specify the styles of the cropper instead of giving hardcoded values
     // Note : the cropper canvas may vary in dimension , so to make cropper size same for the user view irrespective of the cropper size baseUnit is used
-    let baseUnit = Math.ceil( cropperCanvas.width  / (cropperCanvas.clientWidth ) )
+    let baseUnit = Math.ceil( cropperCanvas.width  / cropperCanvas.clientWidth  )
 
     // mouseRadius or touchRadius Used to define the coverage area around the resizer discs so as to give better user experience
     // Note : without this user need to point their cursor or finger exactly at the resizer disc drawn at the vertices of the cropper rectangle
@@ -696,8 +700,8 @@ function firstDraw(){
         imageCanvas.width = img.height
         imageCanvas.height = img.width
     }
-    cropperCanvas.width = imageCanvas.width
-    cropperCanvas.height = imageCanvas.height
+    canvasWidth = imageCanvas.width
+    canvasHeight = imageCanvas.height
 
     // saving the context properties to make a savepoint that can be restored
     imageCanvasContext.save()
@@ -705,22 +709,27 @@ function firstDraw(){
     let rootNode = document.querySelector('html')
     let cropperHeader = document.getElementById('cropper-header')
     let margin = 20
-    let availableHeight = ( rootNode.offsetHeight - cropperHeader.offsetHeight - 2*margin ) * 2
-    let availableWidth =  ( rootNode.offsetWidth - 2*margin ) * 2
+    let availableHeight = ( rootNode.offsetHeight - cropperHeader.offsetHeight - 2*margin )
+    let availableWidth =  ( rootNode.offsetWidth - 2*margin ) 
     
     // setting the dimension according to the available height and width if any of them exceeds corresponding dimension
-    if(cropperCanvas.width > availableWidth || cropperCanvas.height > availableHeight){
-        if(cropperCanvas.width / availableWidth >= cropperCanvas.height / availableHeight){
-            cropperCanvas.width = availableWidth
-            cropperCanvas.height = availableWidth * imageCanvas.height/imageCanvas.width
+    if(canvasWidth > availableWidth || canvasHeight > availableHeight){
+        if(canvasWidth / availableWidth >= canvasHeight.height / availableHeight){
+            canvasWidth = availableWidth
+            canvasHeight = availableWidth * imageCanvas.height/imageCanvas.width
         }
         else{
-            cropperCanvas.width = availableHeight * imageCanvas.width/imageCanvas.height
-            cropperCanvas.height = availableHeight 
+            canvasWidth = availableHeight * imageCanvas.width/imageCanvas.height
+            canvasHeight = availableHeight
         }
     }
-    canvasWidth = cropperCanvas.width
-    canvasHeight = cropperCanvas.height
+
+    // scaling up the canvas to look high in quality , else it will look blurry
+    let scale = ( 2 * window.devicePixelRatio )
+    canvasWidth *= scale
+    canvasHeight *= scale
+    cropperCanvas.width = canvasWidth
+    cropperCanvas.height = canvasHeight
 
     // pre set up for rotating
     imageCanvasContext.rotate(angle*(Math.PI/180))
