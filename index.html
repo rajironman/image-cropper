@@ -54,10 +54,12 @@
       flex-direction: column;
       gap: 10px;
     }
+    #try-sample-image-button,
     #download-button{
       display: none;      
     }
     #crop-this-img.show,
+    #try-sample-image-button.show,
     #download-button.show{
       display: inline-flex;
     }
@@ -101,9 +103,12 @@
     </div>
     <div id="buttons-container">
       <a class="left-icon-button" id="download-button" href="" download="cropped-img"> <img class="icon" src="requirements/img/download.png" alt=""><span class="text dont-hide"''>Download</span></span></a>
-      <label class="left-icon-button" id="try-again-button" ><img class="icon" src="requirements/img/image.png" >
-        <span class="text dont-hide"> Crop another picture</span>
+      <label class="left-icon-button" id="try-again-button" ><img class="icon" src="requirements/img/folder.png" >
+        <span class="text dont-hide"> Crop another image</span>
         <input style="display:none" oninput="if(this.files && this.files[0]){createCropper(showImg,this.files[0]);this.value=null}" accept='image/*' type="file">
+      </label>
+      <label onclick="createCropper(showImg,'requirements/img/sample.png')" class="left-icon-button" id="try-sample-image-button" ><img class="icon" src="requirements/img/image.png" >
+        <span class="text dont-hide">Try sample image</span>
       </label>
       <button id="img-url-input-label" class="left-icon-button"><img class='icon' src="requirements/img/url.png" /><input type="text" onkeyup="checkForEnterKey(event)" placeholder="URL of the image" id="image-url-input" /><img  onclick="cropImgFromURL()" class="left-arrow" src="requirements/img/leftArrow.svg" /></button>
     </div>
@@ -115,11 +120,13 @@
       let imgElement = document.querySelector('#img-element')
       let downloadButton = document.querySelector('#download-button')
       let cropThisImg = document.querySelector('#crop-this-img')
+      let trySampeIMgButton= document.querySelector('#try-sample-image-button')
       imgURL = URL.createObjectURL(imgFile)
       imgElement.src = imgURL
       downloadButton.href = imgElement.src
       downloadButton.classList.add('show')
       cropThisImg.classList.remove('show')
+      trySampeIMgButton.classList.add('show')
 
       imgURL.onload = () => {
          URL.revokeObjectURL(imgURL)
