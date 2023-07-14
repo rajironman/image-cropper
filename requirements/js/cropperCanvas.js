@@ -725,7 +725,7 @@ function firstDraw(){
     }
 
     // scaling up the canvas to look high in quality , else it will look blurry
-    let scale = ( 2 * window.devicePixelRatio )
+    let scale = Math.max( 2 , window.devicePixelRatio )
     canvasWidth *= scale
     canvasHeight *= scale
     cropperCanvas.width = canvasWidth
