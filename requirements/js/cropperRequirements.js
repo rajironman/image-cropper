@@ -59,7 +59,8 @@
             var imgWidth = img.naturalWidth || img.width
             var imgHeight = img.naturalHeight || img.height
             const imgRatio = imgWidth/imgHeight
-            if(!(imgHeight < maxHeight && imgWidth < maxHeight))
+
+            if(imgHeight > maxHeight || imgWidth > maxHeight)
             if((imgRatio >= maxWidth/maxHeight))
             {
                 imgWidth = maxWidth
@@ -69,6 +70,7 @@
                 imgWidth = maxHeight * imgRatio
                 imgHeight = maxHeight
             }
+
             let canvasWidth = imgWidth
             let canvasHeight = imgHeight
             let t,t2

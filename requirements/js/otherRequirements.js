@@ -5,7 +5,7 @@ function customAlert(s,hs="அறிவிப்பு :"){
     var h = document.createElement('h1')
     var cb = document.createElement('button')
 
-    section.classList.add('alert_section')
+    section.classList.add('alert-section')
     div.classList.add('non_selectable')
     cb.innerText = 'சரி'
     p.innerText = s

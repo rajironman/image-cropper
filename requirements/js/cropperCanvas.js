@@ -43,10 +43,9 @@ let isControlsEnabled
 
 let callback
 
-const maximumWidth = Infinity
-const maximumHeight = Infinity
-const minOutputImageHeight = 100
-const maxOutputImageHeight = Infinity
+const maxImageLength = Infinity
+const minImageLength = 100
+const maxOutputImageLength = Infinity
 let mouseRadius 
 let touchRadius
 let isFreeSelection = true
@@ -77,6 +76,7 @@ cropperObj.createCropper = function (callbackFunction,inputImage = null){
     isResizing = false
     isImageInCanvas = false
     isControlsEnabled = true
+    outputImgRatio = 1.6
 
     callback = callbackFunction
     
@@ -87,7 +87,7 @@ cropperObj.createCropper = function (callbackFunction,inputImage = null){
     "<div id='input-div'><label titlemsg='select the image you want to crop...' for='img-input' class='click-effect non-selectable left-icon-button click-effect '><img class='icon' src='requirements/img/plus.png'> <span class='text dont-hide'>select image</span><input id='img-input' type='file' accept='image/*'  ></label>"+
     "<label  class='non-selectable dragAndDrop' id='drop-img-file-button'><img style='width:30px;height:30px;margin-right:15px;' src='requirements/img/dragAndDrop.svg'> drag and drop the image</label></div>"+
     "<div id='controls-div'>"+
-    "<label  class='left-img-button click-effect non-selectable'  titlemsg='rotate 90 degree' onclick='rotate90()' ><img  id='rotateBtnImg'  src='requirements/img/rotate.png' ></label>"+
+    "<label  class='left-img-button click-effect non-selectable'  titlemsg='rotate 90 degree' onclick='rotate()' ><img  id='rotateBtnImg'  src='requirements/img/rotate.png' ></label>"+
     "<label  class='click-effect non-selectable' titlemsg='horizontal flip' onclick='flipHorizontally()'><img class='click-effect' src='requirements/img/hflip.png'></label>"+
     "<label  class='click-effect non-selectable' titlemsg='vertical flip' onclick='flipVertically()'><img src='requirements/img/vflip.png'></label>"+
     "<label  class='click-effect non-selectable' titlemsg='settings' onclick='document.querySelector(\"#set-img-ratio-overlay\").classList.add(\"show\")'><img src='requirements/img/settings.png'></label>"+
@@ -157,7 +157,7 @@ cropperObj.createCropper = function (callbackFunction,inputImage = null){
 // Every time the orientations changes , the image is redrawn in the imageCanvas using firstDraw function
 
 // adding 90degree to the angle variable
-cropperObj.rotate90 = function(){
+cropperObj.rotate = function(){
     angle += 90
     angle %= 360
     firstDraw()
@@ -206,17 +206,28 @@ cropperObj.getImage = function(){
 
     if(isImageInCanvas){
 
+        rotateBtnImg.classList.add('rotateInfinite')
         // the portion of the image defined by cropper is now taken and drawn into outputCanvas to get that portion as a new image
         let x = coords.x * (imageCanvas.width/canvasWidth)
         let y = coords.y * (imageCanvas.height/canvasHeight)
-        let w = coords.w * (imageCanvas.width/canvasWidth)
-        let h = coords.h * (imageCanvas.height/canvasHeight)
+        let width = coords.w * (imageCanvas.width/canvasWidth)
+        let height = coords.h * (imageCanvas.height/canvasHeight)
 
-        // restrict the image height to maxOutputImageHeight
-        outputCanvas.height = Math.round(Math.min( h , maxOutputImageHeight ))
-        outputCanvas.width = Math.round(Math.min( h , maxOutputImageHeight ) * (coords.w/coords.h))
+        outputCanvas.height = Math.round(height)
+        outputCanvas.width = Math.round(height * (coords.w/coords.h))
+        // restrict the image height to maxOutputImageLength
+        if(height > maxOutputImageLength || width > maxOutputImageLength){
+            if(height > width){
+                outputCanvas.height = Math.round(maxOutputImageLength)
+                outputCanvas.width = Math.round(maxOutputImageLength * (coords.w/coords.h))
+            }
+            else{
+                outputCanvas.width = Math.round(maxOutputImageLength)
+                outputCanvas.height = Math.round(maxOutputImageLength * (coords.h/coords.w))
+            }
+        }
 
-        outputCanvasContext.drawImage(imageCanvas,x,y,w,h,0,0,outputCanvas.width,outputCanvas.height)
+        outputCanvasContext.drawImage(imageCanvas,x,y,width,height,0,0,outputCanvas.width,outputCanvas.height)
 
         outputCanvas.toBlob(function(blob){
             var outputImgFile = new File([blob],'image.png',{type:'image/png'})
@@ -229,6 +240,7 @@ cropperObj.getImage = function(){
         },'image/png')
     }
     else customAlert("முதலில் புகைப்படத்தை தேர்வு செய் ... \n\n First select the picture...")
+    rotateBtnImg.classList.add('rotateInfinite')
 }
 
 // handling the event of dragging a file over the button 'drop-img-file-button'
@@ -268,9 +280,9 @@ cropperObj.handleInputImg = function(inputImg){
     inputImgObject.onload = function(){
         if(URL.createObjectURL)
         URL.revokeObjectURL(this.src)
-        if(this.height < minOutputImageHeight)
+        if(this.height < minImageLength && this.width < minImageLength)
         {
-            customAlert(" புகைப்படம் குறைந்தபட்சம் "+minOutputImageHeight+" உயரம் இருக்க வேண்டும் \n\nImage should be atleast "+minOutputImageHeight+" in height ")
+            customAlert("\nபுகைப்படம் குறைந்தபட்சம் "+minImageLength+" x "+minImageLength+" அளவில் இருக்க வேண்டும் \n\nImage size should be atleast "+minImageLength+" x "+minImageLength)
             rotateBtnImg.classList.remove('rotateInfinite')
         }
         else
@@ -281,7 +293,7 @@ cropperObj.handleInputImg = function(inputImg){
                 horizontalFlip = false
                 verticalFlip = false
                 firstDraw()
-            },{orientation:true,maxWidth:maximumWidth,maxHeight:maximumHeight}
+            },{orientation:true,maxWidth:maxImageLength,maxHeight:maxImageLength}
         )
     }
     inputImgObject.onerror = function(){
@@ -829,21 +841,9 @@ cropperObj.setImageRatio = function(ratio){
 function positionTheCanvas(){
     var rootNode = document.querySelector('html')
     var cropperHeader = document.getElementById('cropper-header')
+    var cropperBody = document.getElementById('cropper-body')
     var availableHeight =  rootNode.offsetHeight - cropperHeader.offsetHeight
-    var availableWidth =  rootNode.offsetWidth
-    var margin = 20
-    if(canvasWidth/canvasHeight < availableWidth/availableHeight){
-        cropperCanvas.style.height = (availableHeight-2*margin)+'px'
-        cropperCanvas.style.width = 'auto'
-        cropperCanvas.style.marginLeft = ( (availableWidth - cropperCanvas.offsetWidth)/2  )+ 'px'
-        cropperCanvas.style.marginTop = margin+'px'
-    }
-    else{
-        cropperCanvas.style.height = 'auto'
-        cropperCanvas.style.width = (availableWidth-2*margin)+'px'
-        cropperCanvas.style.marginLeft = margin+'px'
-        cropperCanvas.style.marginTop = ( (availableHeight - cropperCanvas.offsetHeight)/2  )+ 'px'
-    }
+    cropperBody.style.height = availableHeight+'px'
 }
 
 
@@ -866,5 +866,5 @@ let flipVertically = cropperObj.flipVertically
 let getImage = cropperObj.getImage
 let finish = cropperObj.finish
 let handleInputImg = cropperObj.handleInputImg
-let rotate90 = cropperObj.rotate90
+let rotate = cropperObj.rotate
 let setImageRatio = cropperObj.setImageRatio
